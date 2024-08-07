@@ -1,14 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import CustomFormField from "../CustomFormField";
 import SubmitButton from "../SubmitButton";
-import { useState } from "react";
+import { UserFormValidation } from "@/lib/validation";
+import { useRouter } from "next/navigation";
+import { createUser } from "@/lib/actions/patient.actions";
 
 export enum FormFieldType {
   INPUT = "input",
@@ -20,26 +22,34 @@ export enum FormFieldType {
   SKELETON = "skeleton",
 }
 
-const FormPatientSchemaType = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
-});
-
-type FormPatientSchemaType = z.infer<typeof FormPatientSchemaType>;
-
 const PatientForm = () => {
+  const router = useRouter();
+
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<FormPatientSchemaType>({
-    resolver: zodResolver(FormPatientSchemaType),
+  const form = useForm<z.infer<typeof UserFormValidation>>({
+    resolver: zodResolver(UserFormValidation),
     defaultValues: {
-      username: "",
+      name: "",
+      email: "",
+      phone: "",
     },
   });
 
-  function onSubmit(values: FormPatientSchemaType) {
-    console.log(values);
+  async function onSubmit({
+    name,
+    email,
+    phone,
+  }: z.infer<typeof UserFormValidation>) {
+    setIsLoading(true);
+
+    try {
+      const userData = { name, email, phone };
+      const user = await createUser(userData);
+      if (user) router.push(`/patients/${user.$id}/register`);
+    } catch (error) { 
+      console.log(error);
+    }
   }
 
   return (
@@ -54,7 +64,7 @@ const PatientForm = () => {
           control={form.control}
           name="name"
           label="Full name"
-          placeholder="John Doe"
+          placeholder="Ali Razmjooei"
           iconSrc="/assets/icons/user.svg"
           iconAlt="user"
         />

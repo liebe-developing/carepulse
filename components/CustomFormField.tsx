@@ -32,17 +32,6 @@ interface CustomFormFieldProps {
   renderSkeleton?: (field: any) => React.ReactNode;
 }
 
-{
-  /* <FormItem>
-  <FormLabel>{label}</FormLabel>
-  <FormControl>
-    <Input placeholder="shadcn" {...field} />
-  </FormControl>
-  <FormDescription>This is your public display name.</FormDescription>
-  <FormMessage />
-</FormItem>; */
-}
-
 const RenderField = ({
   field,
   props,
@@ -78,7 +67,7 @@ const RenderField = ({
         <FormControl>
           <PhoneInput
             placeholder={placeholder}
-            defaultCountry="US"
+            defaultCountry="IR"
             international
             withCountryCallingCode
             value={field.value as Value | undefined}
